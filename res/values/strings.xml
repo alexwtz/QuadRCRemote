@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">QuadBtRemote</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+	 <string name="menu_settings">Settings</string>
+    <string name="button_quit">Quit</string>
+    <string name="button_connect_devices">Connect to a device</string>
+    <string name="button_disconnect_devices">Disconnect the device</string>
+    <string name="button_send">Send</string>
+    <string name="discovery_begin">Bluetooth discovery begins&#8230;</string>
+    <string name="bluetooth_disabled">Bluetooth is disabled</string>
+    <string name="bluetooth_enabled">Bluetooth is enabled</string>
+	<string name="button_get_position">Ask position</string>
+	<string name="button_stop_position">Stop position</string>
+	<string name="discover">Searching for devices...</string>
+</resources>
