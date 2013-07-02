@@ -55,6 +55,7 @@ public class BtRemoteActivity extends Activity {
 
 	private BroadcastReceiver mReceiver = null;
 
+	//Variable used to determine if the device is connected to the bt device
 	private static boolean connected = false;
 	private AlertDialog.Builder builder;
 
@@ -269,50 +270,57 @@ public class BtRemoteActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		leftControl = null;
-		rightControl = null;
+		leftControl = new Point();
+		rightControl = new Point();
+		leftControl.x = 0;
+		leftControl.y = 0;
+		rightControl.x = 0;
+		rightControl.y = 0;
 
 		Thread getControl = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				try {
 					while (controlRunning) {
 						Thread.sleep(100);
 						Point pt = rcv.getLeftValues();
 						String tmpCmd;
-						//We send left update only if necessary
-						if(leftControl == null)leftControl = pt;
-						if(leftControl.x != pt.x){
-							tmpCmd =  "LX"+pt.x;
-							ctd.write(tmpCmd.getBytes());
+						// We send left update only if necessary
+						if (connected) {
+							if (leftControl.x != pt.x) {
+								tmpCmd = "LX" + (pt.x==100?pt.x:("0"+pt.x))+"n";
+								ctd.write(tmpCmd.getBytes());
+							}
+							if (leftControl.y != pt.y) {
+								tmpCmd = "LY" + (pt.y==100?pt.y:("0"+pt.y))+"n";
+								ctd.write(tmpCmd.getBytes());
+							}
 						}
-						if(leftControl.y != pt.y){
-							tmpCmd =  "LY"+pt.y;
-							ctd.write(tmpCmd.getBytes());
-						}
-						leftControl = pt;
-						Message msg = mHandler.obtainMessage(LEFT_CONTROL,
-								pt);
+						leftControl.x = pt.x;
+						leftControl.y = pt.y;
+						Message msg = mHandler.obtainMessage(LEFT_CONTROL, pt);
 						mHandler.sendMessage(msg);
 						pt = rcv.getRightValues();
-						//We send right update only if necessary
-						if(rightControl == null)rightControl = pt;
-						if(rightControl.x != pt.x){
-							tmpCmd =  "RX"+pt.x;
-							ctd.write(tmpCmd.getBytes());
+						// We send right update only if necessary
+						if (connected) {
+							if (rightControl.x != pt.x) {
+								tmpCmd = "RX" + pt.x;
+								ctd.write(tmpCmd.getBytes());
+							}
+							if (rightControl.y != pt.y) {
+								tmpCmd = "RY" + pt.y;
+								ctd.write(tmpCmd.getBytes());
+							}
 						}
-						if(rightControl.y != pt.y){
-							tmpCmd =  "RY"+pt.y;
-							ctd.write(tmpCmd.getBytes());
-						}
-						rightControl = pt;
+						rightControl.x = pt.x;
+						rightControl.y = pt.y;
 						msg = mHandler.obtainMessage(RIGHT_CONTROL,
 								rcv.getRightValues());
 						mHandler.sendMessage(msg);
 					}
-				} catch (Throwable t) {}
+				} catch (Throwable t) {
+				}
 			}
 		});
 		controlRunning = true;
@@ -534,7 +542,7 @@ public class BtRemoteActivity extends Activity {
 		/* Call this from the main activity to send data to the remote device */
 		public void write(byte[] bytes) {
 			try {
-				mmOutStream.write(bytes);
+				if(connected)mmOutStream.write(bytes);
 			} catch (IOException e) {
 			}
 		}

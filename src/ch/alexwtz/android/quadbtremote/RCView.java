@@ -15,14 +15,16 @@ public class RCView extends View {
 
 	private Point small_circle_1 = new Point();
 	private Point small_circle_2 = new Point();
+	private Point toReturnLeft = new Point();
+	private Point toReturnRight = new Point();
 	private int small_circle1_r = 10;
 	private int small_circle2_r = 10;
 
-	private int left_sqare_x = 0;
+	private int left_square_x = 0;
 	private int left_square_y = 0;
 	private int left_square_side = 250;
 
-	private int right_sqare_x = 0;
+	private int right_square_x = 0;
 	private int right_square_y = 0;
 	private int right_square_side = 250;
 
@@ -56,10 +58,10 @@ public class RCView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		canvas.drawRect(left_sqare_x, left_square_y, left_sqare_x
+		canvas.drawRect(left_square_x, left_square_y, left_square_x
 				+ left_square_side, left_square_y + left_square_side,
 				drawingPaint);
-		canvas.drawRect(right_sqare_x, right_square_y, right_sqare_x
+		canvas.drawRect(right_square_x, right_square_y, right_square_x
 				+ right_square_side, right_square_y + right_square_side,
 				drawingPaint);
 
@@ -145,12 +147,16 @@ public class RCView extends View {
 		drawingPaint.setColor(Color.RED);
 		drawingPaint.setStyle(Paint.Style.STROKE);
 		drawingPaint.setAntiAlias(true);
+		toReturnLeft.x = small_circle_1.x = margin+small_circle1_r;
+		toReturnLeft.y = small_circle_1.y = margin+left_square_side-small_circle1_r;
+		toReturnRight.x = 0;
+		toReturnRight.y = 0;
 
 	}
 
 	private boolean isInsideLeftSquare(int x, int y) {
-		if (x >= left_sqare_x + small_circle1_r
-				&& x <= left_sqare_x + left_square_side - small_circle1_r
+		if (x >= left_square_x + small_circle1_r
+				&& x <= left_square_x + left_square_side - small_circle1_r
 				&& y >= left_square_y + small_circle1_r
 				&& y <= left_square_y + left_square_side - small_circle1_r)
 			return true;
@@ -159,8 +165,8 @@ public class RCView extends View {
 	}
 
 	private boolean isInsideRightSquare(int x, int y) {
-		if (x >= right_sqare_x + small_circle1_r
-				&& x <= right_sqare_x + right_square_side - small_circle1_r
+		if (x >= right_square_x + small_circle1_r
+				&& x <= right_square_x + right_square_side - small_circle1_r
 				&& y >= right_square_y + small_circle1_r
 				&& y <= right_square_y + right_square_side - small_circle1_r)
 			return true;
@@ -171,14 +177,16 @@ public class RCView extends View {
 	public void setScreenSize(Point size) {
 		this.screenWidth = size.x;
 		this.screenHeight = size.y;
-		left_sqare_x = margin;
-		right_sqare_x = screenWidth - margin - right_square_side;
+		left_square_x = margin;
+		right_square_x = screenWidth - margin - right_square_side;
 		left_square_y = margin;
 		right_square_y = margin;
 	}
 	
 	public Point getLeftValues(){
-		return small_circle_1;
+		toReturnLeft.x = (int)(((double)(small_circle_1.x-margin-small_circle1_r))/(double)(left_square_side-2*small_circle1_r)*100.0);
+		toReturnLeft.y = (int)(((double)Math.abs(small_circle_1.y-left_square_side-margin+small_circle1_r))/(double)(left_square_side-2*small_circle1_r)*100.0);
+		return toReturnLeft;
 	}
 	
 	public Point getRightValues(){
