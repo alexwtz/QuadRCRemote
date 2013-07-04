@@ -15,4 +15,7 @@
 	<string name="button_get_position">Ask position</string>
 	<string name="button_stop_position">Stop position</string>
 	<string name="discover">Searching for devices...</string>
+	<string name="ok">Yes</string>
+	<string name="cancel">No</string>
+	<string name="quitBt">Do you want to disable the bluetooth adapter?</string>
 </resources>

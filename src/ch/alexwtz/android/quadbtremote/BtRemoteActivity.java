@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -52,6 +53,7 @@ public class BtRemoteActivity extends Activity {
 
 	static Point leftControl, rightControl;
 	public boolean controlRunning = false;
+	private static String deviceBt;
 
 	private BroadcastReceiver mReceiver = null;
 
@@ -96,7 +98,7 @@ public class BtRemoteActivity extends Activity {
 				pos_z.setText("Z " + msg.obj);
 				break;
 			case CONNECTED:
-				searchDevices.setText("Blabla");
+				searchDevices.setText("Disconnect from :"+deviceBt.split("\n")[0]);
 				connected = true;
 				break;
 			case LEFT_CONTROL:
@@ -116,8 +118,10 @@ public class BtRemoteActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		Window ww = getWindow();
+		ww.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		ww.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_bt_remote);
 
 		Point size = new Point();
@@ -186,8 +190,7 @@ public class BtRemoteActivity extends Activity {
 		quit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
-				System.exit(0);
+				quitApp();
 			}
 		});
 
@@ -201,8 +204,9 @@ public class BtRemoteActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				// The 'which' argument contains the index position
 				// of the selected item
+				deviceBt = btResult.get(which);
 				Toast.makeText(getApplicationContext(),
-						"Connection to :" + btResult.get(which),
+						"Connection to :" + deviceBt,
 						Toast.LENGTH_SHORT).show();
 				ct = new ConnectThread(btResultDevices.get(which));
 				ct.start();
@@ -267,6 +271,37 @@ public class BtRemoteActivity extends Activity {
 		// }
 	}
 
+	public void quitApp(){
+		//Ask to switch off Bluetooth
+	    AlertDialog.Builder builder = new AlertDialog.Builder(BtRemoteActivity.this);
+        builder.setMessage(R.string.quitBt)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                	   mBluetoothAdapter.disable();
+                	   finish();
+       				   System.exit(0);
+                   }
+               })
+               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // User cancelled the dialog
+                	   finish();
+       				System.exit(0);
+                   }
+               })
+               .setCancelable(true);
+        // Create the AlertDialog object and return it
+        builder.create().show();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	        quitApp();
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+	
 	@Override
 	public void onStart() {
 		super.onStart();

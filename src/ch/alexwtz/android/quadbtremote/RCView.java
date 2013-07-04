@@ -30,11 +30,11 @@ public class RCView extends View {
 
 	private int margin = 50;
 
+	@SuppressWarnings("unused")
 	private int screenWidth, screenHeight;
 
 	private boolean insideCircle1 = false;
 	private boolean insideCircle2 = false;
-
 
 	public RCView(Context context) {
 		super(context);
