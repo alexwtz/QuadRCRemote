@@ -23,7 +23,6 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -69,12 +68,14 @@ public class BtRemoteActivity extends Activity {
 
 	private Button quit;
 	public static TextView receivedMessage, pos_x, pos_y, pos_z,ctrL,ctrR;
-	private static Button searchDevices, askPosition;
+	private static Button searchDevices, askPosition,activateBt;
 
 	private ConnectThread ct;
 	private ConnectedThread ctd;
 
 	private static ImageView iv;
+	
+	private Thread getControl;
 
 	private static final Handler mHandler = new Handler() {
 		@Override
@@ -129,6 +130,15 @@ public class BtRemoteActivity extends Activity {
 		rcv = (RCView) findViewById(R.id.RCView);
 		rcv.setScreenSize(size);
 
+		//Control
+		leftControl = new Point();
+		rightControl = new Point();
+		leftControl.x = 0;
+		leftControl.y = 0;
+		rightControl.x = 0;
+		rightControl.y = 0;
+		
+		//User infterface
 		iv = (ImageView) findViewById(R.id.imageView1);
 		
 		ctrL = (TextView) findViewById(R.id.textView4);
@@ -256,63 +266,27 @@ public class BtRemoteActivity extends Activity {
 			}
 		}
 
-		// Ask to start bluetooth if disabled
+		activateBt = (Button)findViewById(R.id.button_bt);
+		activateBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// Ask to start bluetooth if disabled
+				
+					Intent enableBtIntent = new Intent(
+							BluetoothAdapter.ACTION_REQUEST_ENABLE);
+					startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			}
+		});
 		if (!mBluetoothAdapter.isEnabled()) {
-			Intent enableBtIntent = new Intent(
-					BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		} else {
+			displayBtButtons(false);
+		}else{
+			displayBtButtons(true);
 			searchDevices.setEnabled(true);
 		}
-
-		// if(mBluetoothAdapter.startDiscovery()){
-		// Toast.makeText(getApplicationContext(),
-		// getString(R.string.discovery_begin), Toast.LENGTH_SHORT).show();
-		// }
-	}
-
-	public void quitApp(){
-		//Ask to switch off Bluetooth
-	    AlertDialog.Builder builder = new AlertDialog.Builder(BtRemoteActivity.this);
-        builder.setMessage(R.string.quitBt)
-               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                	   mBluetoothAdapter.disable();
-                	   finish();
-       				   System.exit(0);
-                   }
-               })
-               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                       // User cancelled the dialog
-                	   finish();
-       				System.exit(0);
-                   }
-               })
-               .setCancelable(true);
-        // Create the AlertDialog object and return it
-        builder.create().show();
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-	        quitApp();
-	    }
-	    return super.onKeyDown(keyCode, event);
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		leftControl = new Point();
-		rightControl = new Point();
-		leftControl.x = 0;
-		leftControl.y = 0;
-		rightControl.x = 0;
-		rightControl.y = 0;
-
-		Thread getControl = new Thread(new Runnable() {
+		
+		
+		getControl = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -358,13 +332,65 @@ public class BtRemoteActivity extends Activity {
 				}
 			}
 		});
-		controlRunning = true;
-		getControl.start();
+		
+		// if(mBluetoothAdapter.startDiscovery()){
+		// Toast.makeText(getApplicationContext(),
+		// getString(R.string.discovery_begin), Toast.LENGTH_SHORT).show();
+		// }
 	}
 	
 	/**
+	 * Method used to display the buttons relative to the bluetooth function
+	 * @param btConnected
+	 */
+	public void displayBtButtons(boolean btConnected){
+		if (!btConnected) {
+			activateBt.setVisibility(View.VISIBLE);
+			searchDevices.setVisibility(View.GONE);
+			askPosition.setEnabled(false);
+		}else{
+			activateBt.setVisibility(View.GONE);
+			searchDevices.setVisibility(View.VISIBLE);
+			askPosition.setEnabled(true);
+		}
+	}
+
+	/**
+	 * Method called just before leaving the app to ask the user to turn on or off the bluetooth connectivity
+	 */
+	public void quitApp(){
+		//Ask to switch off Bluetooth
+	    AlertDialog.Builder builder = new AlertDialog.Builder(BtRemoteActivity.this);
+        builder.setMessage(R.string.quitBt)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                	   mBluetoothAdapter.disable();
+                	   finish();
+       				   System.exit(0);
+                   }
+               })
+               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // User cancelled the dialog
+                	   finish();
+       				System.exit(0);
+                   }
+               })
+               .setCancelable(true);
+        // Create the AlertDialog object and return it
+        builder.create().show();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	        quitApp();
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+		
+	/**
 	 * Method used to avoid duplicate entry in the bt list
-	 * 
 	 * @param device
 	 */
 	public void addDevice(BluetoothDevice device) {
@@ -393,25 +419,23 @@ public class BtRemoteActivity extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case REQUEST_ENABLE_BT:
-			if (resultCode == RESULT_CANCELED)
+			if (resultCode == RESULT_CANCELED){
 				Toast.makeText(getApplicationContext(),
 						getString(R.string.bluetooth_disabled),
 						Toast.LENGTH_SHORT).show();
-			else {
+				displayBtButtons(false);
+			}else {
 				Toast.makeText(getApplicationContext(),
 						getString(R.string.bluetooth_enabled),
 						Toast.LENGTH_SHORT).show();
 				searchDevices.setEnabled(true);
+				//Thread control running
+				controlRunning = true;
+				getControl.start();
+				displayBtButtons(true);
 			}
 			break;
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.bt_remote, menu);
-		return true;
 	}
 
 	@Override

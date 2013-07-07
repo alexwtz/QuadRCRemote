@@ -18,4 +18,7 @@
 	<string name="ok">Yes</string>
 	<string name="cancel">No</string>
 	<string name="quitBt">Do you want to disable the bluetooth adapter?</string>
+	<string name="btOn">Turn Bt ON</string>
+	<string name="searchBt">Search Bt devices</string>
+	<string name="askPos">Request position</string>
 </resources>

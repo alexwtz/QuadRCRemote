@@ -13,31 +13,32 @@
             android:id="@+id/button_quit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Quit" />
+            android:text="@string/button_quit" />
+
+        <Button
+            android:id="@+id/button_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btOn" />
 
         <Button
             android:id="@+id/button_search_devices"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search devices" />
+            android:text="@string/searchBt" />
 
         <Button
             android:id="@+id/button_ask_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ask position" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+            android:text="@string/askPos" />
 
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/ic_launcher"
+             />
 
     </LinearLayout>
 
