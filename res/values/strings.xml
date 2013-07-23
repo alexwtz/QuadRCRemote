@@ -21,4 +21,10 @@
 	<string name="btOn">Turn Bt ON</string>
 	<string name="searchBt">Search Bt devices</string>
 	<string name="askPos">Request position</string>
+	<string name="mtr1">Motor1</string>
+	<string name="mtr2">Motor2</string>
+	<string name="mtr3">Motor3</string>
+	<string name="mtr4">Motor4</string>
+	<string name="speed">Speed regulation</string>
+	<string name="speedB">Speed</string>
 </resources>

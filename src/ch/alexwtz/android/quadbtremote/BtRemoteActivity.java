@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,10 +69,12 @@ public class BtRemoteActivity extends Activity {
 
 	private Button quit;
 	public static TextView receivedMessage, pos_x, pos_y, pos_z,ctrL,ctrR;
-	private static Button searchDevices, askPosition,activateBt;
+	private static Button searchDevices, askPosition,activateBt,speed;
 
 	private ConnectThread ct;
 	private ConnectedThread ctd;
+	
+	private NumberPicker pk1,pk2,pk3,pk4;
 
 	private static ImageView iv;
 	
@@ -152,11 +155,62 @@ public class BtRemoteActivity extends Activity {
 		pos_y.setText("a");
 		pos_z.setText("a");
 
+		speed = (Button)findViewById(R.id.button_speed);
+		speed.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				if(builder==null)builder =  new AlertDialog.Builder(BtRemoteActivity.this);
+				builder.setTitle(getString(R.string.speed));
+				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int which) {
+				        
+				    	return;
+				    } }); 
+				builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int which) {
+				        return;
+				    } }); 
+				View view = getLayoutInflater().inflate(R.layout.popup, null);
+				builder.setView (view);
+
+				final AlertDialog dialog = builder.create ();
+				pk1 = (NumberPicker) view.findViewById(R.id.myNumber1);
+				pk1.setMinValue(0);
+				pk1.setMaxValue(10);
+				pk1.setValue(5);
+
+				pk2 = (NumberPicker) view.findViewById(R.id.myNumber2);
+				pk2.setMinValue(0);
+				pk2.setMaxValue(10);
+				pk2.setValue(5);
+				
+				pk3 = (NumberPicker) view.findViewById(R.id.myNumber3);
+				pk3.setMinValue(0);
+				pk3.setMaxValue(10);
+				pk3.setValue(5);
+				
+				pk4 = (NumberPicker) view.findViewById(R.id.myNumber4);
+				pk4.setMinValue(0);
+				pk4.setMaxValue(10);
+				pk4.setValue(5);
+				
+				dialog.getWindow().
+				    setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+				dialog.show(); 
+				
+			}
+		});
+		
 		askPosition = (Button) findViewById(R.id.button_ask_position);
 		askPosition.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				
+				
+				
 				String cmd;
 				if (askPosition.getText().equals(
 						getString(R.string.button_stop_position))) {
@@ -169,7 +223,7 @@ public class BtRemoteActivity extends Activity {
 							.setText(getString(R.string.button_stop_position));
 				}
 				ctd.write(cmd.getBytes());
-
+				
 			}
 		});
 
@@ -332,6 +386,7 @@ public class BtRemoteActivity extends Activity {
 				}
 			}
 		});
+		
 		
 		// if(mBluetoothAdapter.startDiscovery()){
 		// Toast.makeText(getApplicationContext(),

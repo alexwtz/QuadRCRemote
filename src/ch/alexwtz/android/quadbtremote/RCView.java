@@ -27,6 +27,8 @@ public class RCView extends View {
 	private int right_square_x = 0;
 	private int right_square_y = 0;
 	private int right_square_side = 250;
+	
+	private int square_margin = small_circle1_r*2;
 
 	private int margin = 50;
 
@@ -63,6 +65,14 @@ public class RCView extends View {
 				drawingPaint);
 		canvas.drawRect(right_square_x, right_square_y, right_square_x
 				+ right_square_side, right_square_y + right_square_side,
+				drawingPaint);
+		
+		//smaller rectangle
+		canvas.drawRect(left_square_x+square_margin, left_square_y+square_margin, left_square_x
+				+ left_square_side-square_margin, left_square_y + left_square_side-square_margin,
+				drawingPaint);
+		canvas.drawRect(right_square_x+square_margin, right_square_y+square_margin, right_square_x
+				+ right_square_side-square_margin, right_square_y + right_square_side-square_margin,
 				drawingPaint);
 
 		if (insideCircle1) {
@@ -183,13 +193,35 @@ public class RCView extends View {
 		right_square_y = margin;
 	}
 	
+	/**
+	 * Compute the position of the left cursor (0;0) is on the bottom left and (100;100) is on top right
+	 * @return
+	 */
 	public Point getLeftValues(){
-		toReturnLeft.x = (int)(((double)(small_circle_1.x-margin-small_circle1_r))/(double)(left_square_side-2*small_circle1_r)*100.0);
-		toReturnLeft.y = (int)(((double)Math.abs(small_circle_1.y-left_square_side-margin+small_circle1_r))/(double)(left_square_side-2*small_circle1_r)*100.0);
+		if(small_circle_1.x<margin+square_margin)toReturnLeft.x=0;
+		else if(small_circle_1.x>margin+left_square_side-square_margin)toReturnLeft.x=100;
+		else toReturnLeft.x = (int)((double)(small_circle_1.x-(margin+square_margin))/(double)(left_square_side-2*square_margin)*100.0);
+		
+		if(small_circle_1.y<margin+square_margin)toReturnLeft.y=100;
+		else if(small_circle_1.y>margin+left_square_side-square_margin)toReturnLeft.y=0;
+		else toReturnLeft.y = (int)Math.abs(((double)(small_circle_1.y-(margin+square_margin))/(double)(left_square_side-2*square_margin)*100.0)-100.0);
+	
 		return toReturnLeft;
 	}
 	
+	/**
+	 * Compute the position of the right stick (0,0) is on center, (-50;-50) on bottom left and (50,50) on top right
+	 * @return
+	 */
 	public Point getRightValues(){
-		return small_circle_2;
+		if(small_circle_2.x<screenWidth-(right_square_side-square_margin+margin))toReturnRight.x=-50;
+		else if(small_circle_2.x>screenWidth-(margin+square_margin))toReturnRight.x=50;
+		else toReturnRight.x = (int)(((double)(small_circle_2.x-(screenWidth-(right_square_side-square_margin+margin)))/(double)(right_square_side-2*square_margin)*100.0)-50.0);
+		
+		if(small_circle_2.y<margin+square_margin)toReturnRight.y=50;
+		else if(small_circle_2.y>margin+right_square_side-square_margin)toReturnRight.y=-50;
+		else toReturnRight.y = (int)Math.abs(((double)(small_circle_2.y-(margin+square_margin))/(double)(right_square_side-2*square_margin)*100.0)-50.0);
+		
+		return toReturnRight;
 	}
 }
